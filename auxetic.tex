@@ -46,19 +46,18 @@ When the usage of the auxetic surface involves fluid transport or storage, the s
 \section{Theoretical aspects}
 
 \subsection{Mathematical model}
-Recall that our auxetic surface is modelled by parametric function $ C: \mathbb{R}^2 \rightarrow \mathbb{R}^3 $; for the sake of identifying variables, we write $ C: (s, t) \rightarrow (x, y, z) $. When the flat surface is folded into its 3-dimensional shape, two events occur at each point:
+Recall that our auxetic surface is modelled by a parametric function $ C: A \rightarrow \mathbb{R}^3 $, where $A \subset \mathbb{R}^2$ is a bounded, connected subset with the standard topology; for the sake of identifying variables, we write $ C: (s, t) \rightarrow (x, y, z) $. When the flat surface is folded into its 3-dimensional shape, two events occur at each point:
 1. The surface expands or retracts at that point.
 2. The surface curves at that point.
-Recall that we are also partitioning the manifold, so we consider many possible tesselations.
 
 \subsubsection{Expansion}
 The expansion at each point is the 2-tuple of its expansions along $s$ and $t$, which can be computed with the magnitudes of the derivatives with respect to $s$ and $t$. If radial symmetry is present, we can simply consider the divergence of the derivative (which is a vector field) at the point.
 
 \subsubsection{Curvature}
-A consistent oriented curvature for a manifold can be computed by multiplying the point's curvature with the magnitude of the normal/cross-product of the tangent vectors in the order $s, t$. The tangent vectors can be computed, again, using the derivatives with respect to $s$ and $t$. The order of the cross-product must be kept throughout the algorithm, in order to preserve a well-defined orientation.
+A consistent oriented curvature for a manifold can be computed by multiplying the point's curvature with the magnitude of the normal/cross-product of the tangent vectors in the order $s, t$. The tangent vectors can be computed, again, using the derivatives with respect to $s$ and $t$. The order of the cross-product must be kept throughout the algorithm, in order to preserve a well-defined orientation. This normal vector is then multipled by the unsigned curvature.
 
 \subsubsection{Tiling}
-Tiling significantly influences the auxetic shape used. Each tile's center can represent a partition-block and the edges can be arbitrary links shared between the connected partition-blocks. As well, we can consider the dual tesselation: each vertex is a partition-block and each edge is a link.
+Recall that we are also partitioning the manifold, so we consider many possible tesselations. Tiling significantly influences the auxetic shape used. Each tile's center can represent a partition-block and the edges can be arbitrary links shared between the connected partition-blocks. As well, we can consider the dual tesselation: each vertex is a partition-block and each edge is a link.
 
 There only exists 3 regular tilings: triangular, square, hexagonal. Regular tilings are preferable to general monohedral tilings due to ... their regularity; they are easier to work with. However, let us not discount the fact that general monohedral tilings could arise as optimal tilings in some unique situations.
 
@@ -69,6 +68,8 @@ As well, many non-edge-to-edge tilings benefit from this role assignation.
 Other tilings involving multiple non-regular shapes, that are either edge-to-edge or non-edge-to-edge are possible, and are definitely worth exploring later.
 
 For the sake of quickly crafting a working project, we are restricting ourselves to regular square tilings. A single square has a total of 4 links, one for each adjacent square. Its dual tesselation also happens to be itself. Also, any visibly non-random, non-edge-to-edge square tiling is clearly isomorphic to an edge-to-edge square tiling in the dual tesselation space (by rotating one's perspective about the z-axis).
+
+Evidently, there is much more to tiling, such as the wallpaper group or Voronoi tilings.
 
 \subsection{Auxetic behaviors}
 Instead of considering the manifold as a set of points, the manifold is partitioned into partition-blocks to allow implementation of auxetics. Thus, each partition-block undergoes a combo of approximated expansion and curvature. For each combo, there exists a continuum of auxetic shapes that do the job. TPU's flexibility gives the necessary leeway for the approximations' applicability.
@@ -183,6 +184,20 @@ Simple example is the following:
 
 This is a side-view for two partition-blocks. When stretched, the left one naturally becomes lower than the right one. This rod can be set diagonally to also allow expansion.
 
-\subsection{Composing shapes in $\mathbb{R}^2$}
+\subsection{Composing in $\mathbb{R}^2$}
+
+\subsubsection{Discrete remapping}
+Now, we enter the crux of the idea: we want the 2D surface to fold into its 3D shape.
+
+Our method is to remap the points in $A \subset \mathbb{R}^2$:
+
+1. Compute the divergence (scalar field) of the derivatives of the parametric surface.
+2. Partition $A$ into squares, and keep only and all the vertices.
+3. Move adjacent points nearer or farther depending on the divergence at each point. A high divergence needs more points to fill the gap, so points move closer to high divergence points.
+
+Notice we are only keeping the points. Now each point is a partition-block, and can be customized depending on the desired auxetic property. We want to choose an auxetic shape for each point such that all remapped points go back to their original position; thus, when we stretch the printed surface, all partition-blocks will start to evenly spread out in 3D. Divergence is acting as substitute for distance (since the mathematics deal with continuous shapes).
+
+\subsubsection{Even reparametrization}
+There is an infinite number of parametrization for a given surface. A good paramatrization should ideally have very evenly spaced gridlines, i.e. the magnitude of the derivatives with respect to $s$ and $t$ should be relatively constant. This is because we want to keep the 2D printed auxetic surface's high resolution when it is expanded/folded into its passive 3D version. If the divergence is too high at a point, it will be very crowded on the 2D printed surface. We haven't found a way yet, but we should always try to choose a good parametrization when using this algorithm.
 
 \end{document}
